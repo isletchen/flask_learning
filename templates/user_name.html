@@ -1,14 +1,23 @@
-<!doctype html>
-<html>
-<head>
-<meta charset="utf-8">
-<title>Homepage</title>
-</head>
-<body>
+{% extends "homepage.html" %}
+
+{% block title %}Flasky - Information{% endblock %}
+
+{% block page_content %}
+<div class="content_user">
 {% if name == "Guest" %}
-<h1>Guest ! Hello World!</h1>
-{% else %}
-<h1>{{name}}, Hello World!</h1>
-{% endif %}
+<h1>Hi Guest! Welcome to this Page</h1>
+<body>
+<p>Your ip address: {{ ip }}</p>
+<P>Your user-agent is: {{ ua }}</P>
+<br>
+<a class="login" href="#">你能在这里登陆或者注册</a>
 </body>
-</html>
+{% else %}
+<h1>Hi {{name}}! Welcome To Flasky</h1>
+<body>
+    <p>Your ip address: {{ ip }}</p>
+    <P>Your user-agent is: {{ ua }}</P>
+</body>
+{% endif %}
+</div>
+{% endblock %}

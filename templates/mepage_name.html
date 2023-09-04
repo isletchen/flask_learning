@@ -6,14 +6,14 @@
 </head>
 <body>
 <h1>Hello {{ user.username }}! 欢迎来到FF APP</h1>
-<p>当前时间为: {{now|dformat}}</p>
-{% if age >= 18 %}
+<p>当前时间为: {{now|dform}}</p>
+{% if user.age >= 18 %}
 <p>你已经成年了</p>
-{% elif age < 18 %}
+{% elif user.age < 18 %}
 <p>你未满18岁</p>
 {% endif %}
 <p style="color: crimson;">在这里你可以做Nothing!</p>
-<p>{{user.username}} - {{user.username|length}}</p>
+<p>{{user.name}} - {{user.name|length}}</p>
 <p>我还知道你的邮箱为: {{ user.email }}</p> 
 <p>以下是可以使用的搜索网站</p>
 <a href="https://www.baidu.com/">Baidu.com</a>
