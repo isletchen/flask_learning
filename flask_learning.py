@@ -26,6 +26,7 @@ app.jinja_env.filters['dform'] = dformat_date
 
 class NameForom(FlaskForm):
     name = StringField("What is your name",validators=[DataRequired()])
+    submit = SubmitField('submit')
 
 @app.route('/')
 def home():
