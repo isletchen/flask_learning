@@ -1,4 +1,4 @@
-{% extends "homepage.html" %}
+{% extends "basic.html" %}
 
 {% block title %}Flasky - Information{% endblock %}
 
@@ -10,7 +10,7 @@
 <p>Your ip address: {{ ip }}</p>
 <P>Your user-agent is: {{ ua }}</P>
 <br>
-<a class="login" href="#">你能在这里登陆或者注册</a>
+<a class="login" href="{{url_for('to_login')}}">你能在这里登陆或者注册</a>
 </body>
 {% else %}
 <h1>Hi {{name}}! Welcome To Flasky</h1>

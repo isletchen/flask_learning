@@ -4,8 +4,8 @@ from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 from datetime import datetime
 from flask_wtf import FlaskForm
-from wtforms import StringField,SubmitField
-from wtforms.validators import DataRequired
+from wtforms import StringField,SubmitField,PasswordField
+from wtforms.validators import DataRequired,EqualTo
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
@@ -26,6 +26,8 @@ app.jinja_env.filters['dform'] = dformat_date
 
 class NameForm(FlaskForm):
     name = StringField("What is your name",validators=[DataRequired()])
+    password = PasswordField("Set Your Password", validators=[DataRequired(), EqualTo('confirm_password', message='Passwords must match')])
+    confirm_password = PasswordField("Confirm Password", validators=[DataRequired()])
     submit = SubmitField('Submit')
 
 @app.route('/')
@@ -66,14 +68,17 @@ def myaccount():
 def page_not_found(e):
     return render_template("404.html",current_time = datetime.utcnow()),404
 
-'''
-@app.route('/usr')
-def get_user():
-    id = None
-    if not id:
-        abort(404)
-    return "We found this guy"
-'''
+@app.route("/login",methods=['GET','POST'])
+def to_login():
+    name = None
+    password = None
+    form = NameForm()
+    if form.validate_on_submit():
+        name = form.name.data
+        password = form.password.data
+        form.name.data = ''
+        form.password.data= ''
+    return render_template('login_page.html',form=form,name=name,password=password)
 
 @app.errorhandler(500)
 def internal_server_error(e):

@@ -1,4 +1,4 @@
-{% extends "bootstrap/base.html" %}
+{% extends "basic.html" %}
 
 
 {% block scripts %}
@@ -6,39 +6,7 @@
 {{ moment.include_moment() }}
 {% endblock %}
 
-{% block head %}
-{{ super() }}
-<link rel="shortcut icon" href="{{ url_for('static',filename='favicon.ico') }}" type="image/x-icon">
-<link rel="icon" href="{{ url_for('static',filename='favicon.ico') }}" type="image/x-icon">
-{% endblock %}
-
-{% block title %}Flasky{% endblock %}
-
-{% block navbar %}
-<div class="navbar navbar-inverse" role="navigation">
-    <div class="container">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                <sapn class="sr-only">Toggle navigation</sapn>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="{{url_for('home')}}">Flasky</a>
-        </div>
-        <div class="navbar-collapse collapse">
-            <ul class="nav navbar-nav">
-                <li><a href="{{url_for('print_helloworld')}}">打招呼</a></li>
-                <li><a href="{{url_for('hello_world',name=ip)}}">Hello World</a></li>
-                <li><a href="{{url_for('RD_baidu')}}">百度</a></li>
-                <li><a href="{{url_for('myaccount')}}">我的</a></li>
-                <li><a href="{{url_for('response_make')}}">Cookie</a></li>
-            </ul>
-        </div>
-    </div>
-</div>
-{% endblock %}
-
+{% block title %}Flasky-Home{% endblock %}
 
 {% block content %}
 <div class="container">
