@@ -1,4 +1,4 @@
-from flask import Flask,render_template,session,url_for
+from flask import Flask,render_template,session,url_for,flash
 from flask import request,make_response,redirect
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
@@ -84,7 +84,10 @@ def to_login():
 @app.route("/login",methods=['GET','POST'])
 def to_login():
     form = NameForm()
-    if form.validate_on_submit():
+    if form.validate_on_submit(): #当用户有提交的时候才会返回false
+        old_name = session.get('name')
+        if old_name is not None and old_name != form.name.data:
+            flash('You success change the user name!')
         session['name'] = form.name.data
         session['password'] = form.password.data
         return redirect(url_for('to_login'))
