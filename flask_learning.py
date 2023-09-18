@@ -1,5 +1,5 @@
-from flask import Flask,render_template
-from flask import request,make_response,redirect,abort
+from flask import Flask,render_template,session,url_for
+from flask import request,make_response,redirect
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 from datetime import datetime
@@ -68,6 +68,7 @@ def myaccount():
 def page_not_found(e):
     return render_template("404.html",current_time = datetime.utcnow()),404
 
+'''
 @app.route("/login",methods=['GET','POST'])
 def to_login():
     name = None
@@ -79,6 +80,15 @@ def to_login():
         form.name.data = ''
         form.password.data= ''
     return render_template('login_page.html',form=form,name=name,password=password)
+'''
+@app.route("/login",methods=['GET','POST'])
+def to_login():
+    form = NameForm()
+    if form.validate_on_submit():
+        session['name'] = form.name.data
+        session['password'] = form.password.data
+        return redirect(url_for('to_login'))
+    return render_template('login_page.html',form=form,name=session.get('name'),password=session.get('password'))
 
 @app.errorhandler(500)
 def internal_server_error(e):
