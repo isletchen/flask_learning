@@ -6,12 +6,35 @@ from datetime import datetime
 from flask_wtf import FlaskForm
 from wtforms import StringField,SubmitField,PasswordField
 from wtforms.validators import DataRequired,EqualTo
+from flask_sqlalchemy import SQLAlchemy
+import mysql_utils as mu
+
 
 app = Flask(__name__)
+
+app.config['SECRET_KEY'] = "hardtoguessstring"
+app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql://{mu.username}:{mu.password}@{mu.host}/{mu.database}"
+
+db = SQLAlchemy(app)
 bootstrap = Bootstrap(app)
 moment = Moment(app)
 
-app.config['SECRET_KEY'] = "hardtoguessstring"
+#创建数据库
+class Role(db.Model):
+    __tablename__ = 'roles'
+    id = db.Column(db.Integer,primary_key=True)
+    name = db.Column(db.String(64),unique = True)
+
+    def __repr__(self):
+        return '<Role %r>' %self.name
+    
+class User(db.Model):
+    __tablename__ = 'users'
+    id = db.Column(db.Integer,primary_key=True)
+    username = db.Column(db.String(64),unique=True,index=True)
+
+    def __repr__(self):
+        return '<User %r>' %self.username
 
 class User():
     def __init__(self,name,age,email):
@@ -24,6 +47,7 @@ def dformat_date(time):
 
 app.jinja_env.filters['dform'] = dformat_date
 
+#创建表单
 class NameForm(FlaskForm):
     name = StringField("What is your name",validators=[DataRequired()])
     password = PasswordField("Set Your Password", validators=[DataRequired(), EqualTo('confirm_password', message='Passwords must match')])
