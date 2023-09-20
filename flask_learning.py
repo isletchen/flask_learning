@@ -13,7 +13,8 @@ import mysql_utils as mu
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = "hardtoguessstring"
-app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql://{mu.username}:{mu.password}@{mu.host}/{mu.database}"
+#app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql://{mu.username}:{mu.password}@{mu.host}/{mu.database}"
+app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:////Users/zhibin.chen/Documents/模型/flask_learning/data/sqlite_data.db"
 
 db = SQLAlchemy(app)
 bootstrap = Bootstrap(app)
@@ -28,6 +29,9 @@ class Role(db.Model):
     def __repr__(self):
         return '<Role %r>' %self.name
     
+    def __init__(self,name):
+        self.name = name
+    
 class User(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer,primary_key=True)
@@ -35,6 +39,9 @@ class User(db.Model):
 
     def __repr__(self):
         return '<User %r>' %self.username
+
+    def __init__(self,username):
+        self.username = username
 
 class User():
     def __init__(self,name,age,email):
