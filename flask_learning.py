@@ -117,14 +117,20 @@ def page_not_found(e):
 def to_login():
     form = NameForm()
     if form.validate_on_submit():
-        old_name = session.get('name')
-        if old_name is not None or old_name != form.name.data:
-            flash("You success add a new user")
-        user = Dimuser(form.name.data,form.password.data)
-        db.session.add(user)
-        db.session.commit()
-        session['name'] = form.name.data
-        session['password'] = form.password.data
+        if Dimuser.query.filter_by(name=form.name.data).first() is not None:
+            user = Dimuser.query.filter_by(name=form.name.data).first()
+            user.password = form.password.data
+            db.session.commit()
+            flash("You Success Change the password!")
+            session['name'] = form.name.data
+            session['password'] = form.password.data
+        else:
+            user = Dimuser(form.name.data,form.password.data)
+            db.session.add(user)
+            db.session.commit()
+            flash('Add a new Person')
+            session['name'] = form.name.data
+            session['password'] = form.password.data
         return redirect(url_for('to_login'))
     return render_template('login_page.html',form=form,name=session.get('name'),password=session.get('password'))
 
