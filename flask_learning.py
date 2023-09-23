@@ -13,8 +13,8 @@ import mysql_utils as mu
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = "hardtoguessstring"
-#app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql://{mu.username}:{mu.password}@{mu.host}/{mu.database}"
-app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:////Users/zhibin.chen/Documents/模型/flask_learning/data/sqlite_data.db"
+app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{mu.username}:{mu.password}@{mu.host}:{mu.port}/{mu.database}"
+#app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:////Users/zhibin.chen/Documents/模型/flask_learning/data/sqlite_data.db"
 
 db = SQLAlchemy(app)
 bootstrap = Bootstrap(app)
@@ -43,6 +43,16 @@ class User(db.Model):
     def __init__(self,username):
         self.username = username
 
+class Dimuser(db.Model):
+    __tablename__ = 'Dimuser'
+    id = db.Column(db.Integer,primary_key=True)
+    name = db.Column(db.String(64),nullable=False)
+    password = db.Column(db.String(64),nullable=False)
+
+    def __init__(self,name,password):
+        self.name = name
+        self.password = password
+
 class User():
     def __init__(self,name,age,email):
         self.name = name
@@ -60,6 +70,9 @@ class NameForm(FlaskForm):
     password = PasswordField("Set Your Password", validators=[DataRequired(), EqualTo('confirm_password', message='Passwords must match')])
     confirm_password = PasswordField("Confirm Password", validators=[DataRequired()])
     submit = SubmitField('Submit')
+
+with app.app_context():
+    db.create_all()
 
 @app.route('/')
 def home():
@@ -99,30 +112,35 @@ def myaccount():
 def page_not_found(e):
     return render_template("404.html",current_time = datetime.utcnow()),404
 
-'''
+
 @app.route("/login",methods=['GET','POST'])
 def to_login():
-    name = None
-    password = None
     form = NameForm()
     if form.validate_on_submit():
-        name = form.name.data
-        password = form.password.data
-        form.name.data = ''
-        form.password.data= ''
-    return render_template('login_page.html',form=form,name=name,password=password)
+        old_name = session.get('name')
+        if old_name is not None or old_name != form.name.data:
+            flash("You success add a new user")
+        user = Dimuser(form.name.data,form.password.data)
+        db.session.add(user)
+        db.session.commit()
+        session['name'] = form.name.data
+        session['password'] = form.password.data
+        return redirect(url_for('to_login'))
+    return render_template('login_page.html',form=form,name=session.get('name'),password=session.get('password'))
+
 '''
 @app.route("/login",methods=['GET','POST'])
 def to_login():
     form = NameForm()
     if form.validate_on_submit(): #当用户有提交的时候才会返回false
         old_name = session.get('name')
-        if old_name is not None and old_name != form.name.data:
+        if old_name is not None or old_name != form.name.data:
             flash('You success change the user name!')
         session['name'] = form.name.data
         session['password'] = form.password.data
         return redirect(url_for('to_login'))
     return render_template('login_page.html',form=form,name=session.get('name'),password=session.get('password'))
+'''
 
 @app.errorhandler(500)
 def internal_server_error(e):
