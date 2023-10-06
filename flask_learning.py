@@ -141,14 +141,6 @@ def to_login():
         return redirect(url_for('to_login'))
     return render_template('login_page.html',form=form,name=session.get('name'),password=session.get('password'))
 
-@app.route('/delete_user')
-def delete_user():
-    if session.get('name') and session.get('password'):
-        session['name'] = None
-        session['password'] = None
-        flash('')
-    return "Success!"
-
 '''
 @app.route("/login",methods=['GET','POST'])
 def to_login():
