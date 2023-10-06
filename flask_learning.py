@@ -53,7 +53,7 @@ class Dimuser(db.Model):
         self.name = name
         self.password = password
 
-class User():
+class Users():
     def __init__(self,name,age,email):
         self.name = name
         self.age = age
@@ -71,8 +71,15 @@ class NameForm(FlaskForm):
     confirm_password = PasswordField("Confirm Password", validators=[DataRequired()])
     submit = SubmitField('Submit')
 
+'''
 with app.app_context():
     db.create_all()
+'''
+
+
+@app.shell_context_processor
+def make_shell_context():
+    return dict(db=db,Dimuser=Dimuser,Users=Users,Role=Role)
 
 @app.route('/')
 def home():
@@ -105,7 +112,7 @@ def print_helloworld():
 
 @app.route('/mepage')
 def myaccount():
-    usr = User("Bob",27,'xxxx@qq.com')
+    usr = Users("Bob",27,'xxxx@qq.com')
     return render_template("mepage_name.html",now = datetime.now(),user=usr)
 
 @app.errorhandler(404)
@@ -133,6 +140,14 @@ def to_login():
             session['password'] = form.password.data
         return redirect(url_for('to_login'))
     return render_template('login_page.html',form=form,name=session.get('name'),password=session.get('password'))
+
+@app.route('/delete_user')
+def delete_user():
+    if session.get('name') and session.get('password'):
+        session['name'] = None
+        session['password'] = None
+        flash('')
+    return "Success!"
 
 '''
 @app.route("/login",methods=['GET','POST'])
