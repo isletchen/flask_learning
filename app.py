@@ -5,20 +5,29 @@ from flask_moment import Moment
 from datetime import datetime
 from flask_wtf import FlaskForm
 from wtforms import StringField,SubmitField,PasswordField
-from wtforms.validators import DataRequired,EqualTo
+from wtforms.validators import DataRequired,EqualTo,Email,Optional
 from flask_sqlalchemy import SQLAlchemy
 import mysql_utils as mu
+from flask_migrate import Migrate
+
+'''
+ORM模型映射成表的三步
+1. flask db init: 这步只需要执行一次
+2. flask db migrate: 识别ORM模型的改变, 形成迁移脚本
+3. flask db upgrade: 运行迁移脚本, 同步到数据库中
+'''
 
 
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = "hardtoguessstring"
-app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{mu.username}:{mu.password}@{mu.host}:{mu.port}/{mu.database}"
-#app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:////Users/zhibin.chen/Documents/模型/flask_learning/data/sqlite_data.db"
+#app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{mu.username}:{mu.password}@{mu.host}:{mu.port}/{mu.database}"
+app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:////Users/zhibin.chen/Documents/模型/flask_learning/data/sqlite_data.db"
 
 db = SQLAlchemy(app)
 bootstrap = Bootstrap(app)
 moment = Moment(app)
+migrate = Migrate(app,db)
 
 #创建数据库
 class Role(db.Model):
@@ -50,10 +59,13 @@ class Dimuser(db.Model):
     id = db.Column(db.Integer,primary_key=True)
     name = db.Column(db.String(64),nullable=False)
     password = db.Column(db.String(64),nullable=False)
+    email = db.Column(db.String(64))
+    #more = db.Column(db.String(64))
 
     def __init__(self,name,password):
         self.name = name
         self.password = password
+        self.email = email
 
 class Users():
     def __init__(self,name,age,email):
@@ -69,6 +81,7 @@ app.jinja_env.filters['dform'] = dformat_date
 #创建表单
 class NameForm(FlaskForm):
     name = StringField("What is your name",validators=[DataRequired()])
+    email = StringField("What is your email",validators=[Optional()])
     password = PasswordField("Set Your Password", validators=[DataRequired(), EqualTo('confirm_password', message='Passwords must match')])
     confirm_password = PasswordField("Confirm Password", validators=[DataRequired()])
     submit = SubmitField('Submit')
@@ -77,7 +90,6 @@ class NameForm(FlaskForm):
 with app.app_context():
     db.create_all()
 '''
-
 
 @app.shell_context_processor
 def make_shell_context():
@@ -129,12 +141,13 @@ def to_login():
         if Dimuser.query.filter_by(name=form.name.data).first() is not None:
             user = Dimuser.query.filter_by(name=form.name.data).first()
             user.password = form.password.data
+            user.email = form.email.data
             db.session.commit()
             flash("You Success Change the password!")
             session['name'] = form.name.data
             session['password'] = form.password.data
         else:
-            user = Dimuser(form.name.data,form.password.data)
+            user = Dimuser(form.name.data,form.password.data,form.email.data)
             db.session.add(user)
             db.session.commit()
             flash('Add a new Person')

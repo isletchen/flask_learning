@@ -3,3 +3,4 @@
 __pycache__/
 mysql_utils.py
 data/
+migrations/
