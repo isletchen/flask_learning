@@ -62,7 +62,7 @@ class Dimuser(db.Model):
     email = db.Column(db.String(64))
     #more = db.Column(db.String(64))
 
-    def __init__(self,name,password):
+    def __init__(self,name,password,email):
         self.name = name
         self.password = password
         self.email = email
