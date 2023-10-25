@@ -21,5 +21,7 @@ def hello_name(name):
 '''
 flask run --host=0.0.0.0  切换内网ip地址
 flask run --port=8000 切换端口
-
+可以使用url_fo()函数来获取端点 (endpoint), 端点用来标记视图函数与对应URL的规则, 端点的默认值是视图函数名
+当URL有动态部分的时候: url_for('hello_name',name="Jack")
+若将_external参,数设为True, 则会生成可供外部使用的完整URL
 '''
